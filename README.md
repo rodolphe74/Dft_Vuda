@@ -4,7 +4,7 @@
 
 An gpu dft attempt using vuda toolkit.
 
-<img src="/img/formula.jpg">
+<img src="/img/formula.png">
 
 (C++ DFT <--> Vuda lib <--> Vulkan SDK <--> GPU <--> numerous parallel gpu threads)
 
