@@ -1,0 +1,7 @@
+[submodule "stb"]
+    path = stb
+    url = https://github.com/nothings/stb.git
+
+[submodule "vuda"]
+    path = vuda
+    url = https://github.com/jgbit/vuda.git
