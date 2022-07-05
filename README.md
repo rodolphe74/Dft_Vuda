@@ -9,4 +9,4 @@ A gpu dft computation attempt using Vuda toolkit in Visual C++.
 (C++ DFT <--> Vuda lib <--> Vulkan SDK <--> GPU <--> numerous parallel gpu threads)
 
 
-NB: All libraries are included in the project except Vulcan which can downloaded at https://vulkan.lunarg.com/sdk/home#windows.
+NB: All libraries are included in the project except Vulcan which can be downloaded at https://vulkan.lunarg.com/sdk/home#windows.
