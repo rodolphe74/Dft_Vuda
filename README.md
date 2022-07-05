@@ -3,6 +3,8 @@
 <img src="/img/fourier.jpg" width="150">
 <img src="/img/vulkan.jpg" width="150">
 
+<img src="/img/fourier.jpg" width="150">  |  <img src="/img/vulkan.jpg" width="150">
+
 A gpu dft computation attempt using vuda toolkit.
 
 <img src="/img/formula.png">
