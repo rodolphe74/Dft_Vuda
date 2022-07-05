@@ -2,4 +2,5 @@
 
 An gpu dft attempt !
 
-![Original](/img/coin.png)
+
+<img src="/img/fourier.jpg" width="48">
