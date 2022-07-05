@@ -3,4 +3,4 @@
 An gpu dft attempt !
 
 
-<img src="/img/fourier.jpg" width="48">
+<img src="/img/fourier.jpg" width="150">
