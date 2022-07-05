@@ -2,7 +2,7 @@
 
 <img src="/img/fourier.jpg" height="200">
 
-A gpu dft computation attempt using vuda toolkit.
+A gpu dft computation attempt using Vuda toolkit.
 
 <img src="/img/formula.png">
 
