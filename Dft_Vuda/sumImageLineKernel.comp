@@ -1,0 +1,202 @@
+#version 450 core
+
+//
+// workgroup size defined with specialization constants.
+layout( local_size_x_id = 0 ) in;
+/*layout( local_size_y_id = 1 ) in;
+layout( local_size_z_id = 2 ) in;*/
+
+
+//
+// complex numbers primitives
+//
+const float M_PI = 3.1415926535897932384626433832795;
+
+float cl_complex_real_part(in vec2 c) {
+	return c.x;
+}
+
+float cl_complex_imaginary_part(in vec2 n) {
+	return n.y;
+}
+
+/*
+ * Returns modulus of complex number (its length):
+ */
+float cl_complex_modulus(in vec2 n) {
+	return (sqrt((n.x * n.x) + (n.y * n.y)));
+}
+
+vec2 cl_complex_add(in vec2 a, in vec2 b) {
+	return vec2(a.x + b.x, a.y + b.y);
+}
+
+vec2 cl_complex_multiply(in vec2 a, in vec2 b) {
+	return vec2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+}
+
+/*
+ * Computes the integer Integer power of a complex number.
+ */
+vec2 cl_complex_ipow(in vec2 c, int p) {
+	for (int i = 0; i < p; ++i) {
+		c = cl_complex_multiply(c, c);
+	}
+    return c;
+}
+
+vec2 cl_complex_divide(in vec2 a, in vec2 b) {
+	float dividend = (b.x * b.x + b.y * b.y);
+	return vec2((a.x * b.x + a.y * b.y) / dividend, (a.y * b.x - a.x * b.y) / dividend);
+}
+
+
+/*
+ * Get the argument of a complex number (its angle):
+ * http://en.wikipedia.org/wiki/Complex_number#Absolute_value_and_argument
+ */
+float cl_complex_argument(in vec2 a) {
+	if (a.x > 0) {
+		return atan(a.y / a.x);
+
+	}
+	else if (a.x < 0 && a.y >= 0) {
+		return atan(a.y / a.x) + M_PI;
+
+	}
+	else if (a.x < 0 && a.y < 0) {
+		return atan(a.y / a.x) - M_PI;
+
+	}
+	else if (a.x == 0 && a.y > 0) {
+		return M_PI / 2;
+
+	}
+	else if (a.x == 0 && a.y < 0) {
+		return -M_PI / 2;
+
+	}
+	else {
+		return 0;
+	}
+}
+
+
+/*
+ * Computes the exponential function for the complex number z = x+iy
+ * as: exp(z) = e^x(cos(y) + isin(y))
+ * See: https://en.wikipedia.org/wiki/Exponential_function#Complex_plane
+ * 
+ */
+vec2 cl_complex_exp(in vec2 n) {
+	float e = exp(n.x);
+	return vec2(e * cos(n.y), e * sin(n.y));
+}
+
+
+
+/*
+ *  Returns the Square root of complex number.
+ *  Although a complex number has two square roots,
+ *  only  one of them -the principal square root- is computed.
+ *  see wikipedia:http://en.wikipedia.org/wiki/Square_root#Principal_square_root_of_a_complex_number
+ */
+vec2 cl_complex_sqrt(in vec2 n) {
+	float sm = sqrt(cl_complex_modulus(n));
+	float a2 = cl_complex_argument(n) / 2;
+	float ca2 = cos(/*(float) a2*/1.2);
+	float sa2 = sin(a2);
+	return vec2(sm * ca2, sm * sa2);
+}
+
+
+/*
+ * Computes the logarithm of the complex number z= x+iy
+ * x+iy = re^{i\theta}
+ * log(x+iy) = log(re^{i\theta} = log(r)+log(e^{i\theta}
+ * where r is the module of |z| = sqrt(x^2+y^2)
+ * log(z) = log(|z|) + iarg(z) = log(sqrt(x^2+y^2) + i atan(y/b)
+ */
+vec2 cl_complex_log(in vec2 z) {
+	return vec2(log(cl_complex_modulus(z)), cl_complex_argument(z));
+}
+
+
+
+int index(int x, int y, int w) {
+	return (y * w + x);
+}
+
+
+//
+// resources
+//
+
+layout(set = 0, binding = 0) readonly buffer IM { float im[]; };
+layout(set = 0, binding = 1) writeonly buffer SUM { float sum[]; };
+layout(set = 0, binding = 2) readonly buffer W { int w[]; };
+layout(set = 0, binding = 3) readonly buffer H { int h[]; };
+layout(set = 0, binding = 4) readonly buffer U { int u[]; };
+layout(set = 0, binding = 5) readonly buffer V { int v[]; };
+
+
+vec2 sumCol(const int x, const int w, const int h, const int u, const int v) {
+	float dx = float(x);
+	float dw = float(w);
+	float dh = float(h);
+	float du = float(u);
+	float dv = float(v);
+
+	vec2 fxy;
+	vec2 e;
+	vec2 expe;
+	vec2 mult;
+	vec2 currentSum;
+
+
+	currentSum = vec2(0, 0);
+	for (int y = 0; y < h; y++) {
+		float dy = float(y);
+	
+		fxy = vec2(im[index(x, y, w)], 0);
+		e = vec2(0, -2 * M_PI * ((dx * du) / dw + (dy * dv) / dh));
+		expe = cl_complex_exp(e);
+		mult = cl_complex_multiply(fxy, expe);
+		currentSum = cl_complex_add(currentSum, mult);
+	}
+
+	return currentSum;
+}
+
+
+void main(void)
+{
+
+/*
+            for (int x = 0; x < w; x++) {
+                complex<double> currentSum = sumCols(normImage, x, w, h, u, v);
+                //cout << "  currentSum:" << currentSum << endl;
+                sum += currentSum;
+            }
+            cout << "sum:" << sum << endl;
+
+            double magnitude = log(abs(sum));
+            // int32_t color = round(255.0 / log(1 + magnitude));
+            //std::cout << "\r" << "(" << u << "," << v << ")" << " magnitude:" << magnitude << std::flush;
+            magnitudes[index(u, v, w)] = magnitude;
+            //cout << "index(u, v, w)=" << index(u, v, w) << endl;
+
+*/
+
+
+    // CUDA: threadIdx.x + blockIdx.x * blockDim.x    
+    int x = int(gl_GlobalInvocationID.x); // = gl_WorkGroupID * gl_WorkGroupSize + gl_LocalInvocationID
+
+	//vec2 currentSum = vec2(0,0);
+
+	vec2 currentSum = sumCol(x, w[0], h[0], u[0], v[0]);
+
+
+	sum[2*x] = cl_complex_real_part(currentSum);
+	sum[2*x+1] = cl_complex_imaginary_part(currentSum);
+}
