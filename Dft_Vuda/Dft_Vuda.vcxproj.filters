@@ -20,9 +20,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="sumColsKernel.comp">
-      <Filter>Fichiers sources</Filter>
-    </None>
     <None Include="sumImageLineKernel.comp">
       <Filter>Fichiers sources</Filter>
     </None>

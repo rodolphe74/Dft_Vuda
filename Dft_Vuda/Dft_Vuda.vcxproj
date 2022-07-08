@@ -115,8 +115,7 @@
       <StackReserveSize>4194304</StackReserveSize>
     </Link>
     <PreBuildEvent>
-      <Command>glslangValidator.exe -V .\sumColsKernel.comp -o sumColsKernel.spv
-glslangValidator.exe -V .\sumImageLineKernel.comp -o sumImageLineKernel.spv
+      <Command>glslangValidator.exe -V .\sumImageLineKernel.comp -o sumImageLineKernel.spv
 </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -130,6 +129,7 @@ glslangValidator.exe -V .\sumImageLineKernel.comp -o sumImageLineKernel.spv
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\vuda\inc;C:\Users\rodoc\HOME\developpement\cpp\VulkanSDK\1.3.216.0\Include;..\stb;..\glfw-3.3.5.bin.WIN64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/GL /arch:AVX2 /favor:blend /fp:fast %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,8 +141,7 @@ glslangValidator.exe -V .\sumImageLineKernel.comp -o sumImageLineKernel.spv
       <StackReserveSize>4194304</StackReserveSize>
     </Link>
     <PreBuildEvent>
-      <Command>glslangValidator.exe -V .\sumColsKernel.comp -o sumColsKernel.spv
-glslangValidator.exe -V .\sumImageLineKernel.comp -o sumImageLineKernel.spv
+      <Command>glslangValidator.exe -V .\sumImageLineKernel.comp -o sumImageLineKernel.spv
 </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -150,7 +149,6 @@ glslangValidator.exe -V .\sumImageLineKernel.comp -o sumImageLineKernel.spv
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="sumColsKernel.comp" />
     <None Include="sumImageLineKernel.comp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

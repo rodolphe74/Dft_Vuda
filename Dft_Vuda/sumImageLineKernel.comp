@@ -3,8 +3,6 @@
 //
 // workgroup size defined with specialization constants.
 layout( local_size_x_id = 0 ) in;
-/*layout( local_size_y_id = 1 ) in;
-layout( local_size_z_id = 2 ) in;*/
 
 
 //
@@ -171,31 +169,10 @@ vec2 sumCol(const int x, const int w, const int h, const int u, const int v) {
 
 void main(void)
 {
-
-/*
-            for (int x = 0; x < w; x++) {
-                complex<double> currentSum = sumCols(normImage, x, w, h, u, v);
-                //cout << "  currentSum:" << currentSum << endl;
-                sum += currentSum;
-            }
-            cout << "sum:" << sum << endl;
-
-            double magnitude = log(abs(sum));
-            // int32_t color = round(255.0 / log(1 + magnitude));
-            //std::cout << "\r" << "(" << u << "," << v << ")" << " magnitude:" << magnitude << std::flush;
-            magnitudes[index(u, v, w)] = magnitude;
-            //cout << "index(u, v, w)=" << index(u, v, w) << endl;
-
-*/
-
-
     // CUDA: threadIdx.x + blockIdx.x * blockDim.x    
     int x = int(gl_GlobalInvocationID.x); // = gl_WorkGroupID * gl_WorkGroupSize + gl_LocalInvocationID
 
-	//vec2 currentSum = vec2(0,0);
-
 	vec2 currentSum = sumCol(x, w[0], h[0], u[0], v[0]);
-
 
 	sum[2*x] = cl_complex_real_part(currentSum);
 	sum[2*x+1] = cl_complex_imaginary_part(currentSum);
